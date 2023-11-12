@@ -1,0 +1,56 @@
+#Command  gcloud builds submitoptions:
+options:
+  logging: CLOUD_LOGGING_ONLY
+  dynamic_substitutions: true
+  substitution_option: 'ALLOW_LOOSE'
+
+timeout: '700s'
+
+steps:
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      [
+        'run',
+        'deploy',
+        'imagor',
+        '--project',
+        '${_PROJECT}',
+        '--image',
+        '${_IMAGE_SOURCE}',
+        '--region',
+        '${_REGION}',
+        '--platform',
+        'managed',
+        '--max-instances',
+        '${_MAX_INSTANCES}',
+        '--min-instances',
+        '${_MIN_INSTANCES}',
+        '--concurrency',
+        '${_CONCURRENCY}',
+        '--cpu',
+        '${_CPU}',
+        '--memory',
+        '${_MEMORY}',
+        '--set-env-vars',
+        'IMAGOR_SECRET=${_IMAGOR_SECRET},GCLOUD_RESULT_STORAGE_BUCKET=${_GCLOUD_RESULT_STORAGE_BUCKET},GCLOUD_RESULT_STORAGE_BASE_DIR=${_GCLOUD_RESULT_STORAGE_BASE_DIR}',
+      ]
+
+tags:
+  - image-compression
+
+substitutions:
+  _PROJECT: unused
+  _IMAGE_SOURCE: unused
+  _REGION: europe-west1
+  _MIN_INSTANCES: "0"
+  _MAX_INSTANCES: "1"
+  _CONCURRENCY: "300"
+  _CPU: "1"
+  _MEMORY: 512Mi
+  _IMAGOR_SECRET: unused
+  _GCLOUD_RESULT_STORAGE_BUCKET: unused
+  _GCLOUD_RESULT_STORAGE_BASE_DIR: unused
+  
